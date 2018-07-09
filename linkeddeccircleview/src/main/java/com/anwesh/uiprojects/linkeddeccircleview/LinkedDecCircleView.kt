@@ -41,7 +41,7 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
             }
         }
 
-        fun startUpdating(startcb : (Float) -> Unit) {
+        fun startUpdating(startcb : () -> Unit) {
             if (dir == 0f) {
                 dir = 1 - 2 * prevScale
                 startcb()
@@ -75,5 +75,60 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
                 animated = false
             }
         }
+    }
+
+    data class DSNode(var i : Int, val state : DCState = DCState()) {
+
+        var next : DSNode? = null
+
+        var prev : DSNode? = null
+
+        fun update(stopcb : (Float) -> Unit) {
+            state.update(stopcb)
+        }
+
+        fun startUpdating(startcb : () -> Unit) {
+            state.startUpdating(startcb)
+        }
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            val w : Float = canvas.width.toFloat()
+            val h : Float = canvas.height.toFloat()
+            val gap : Float = w / DC_NODES
+            val r : Float = gap / (2 * DC_NODES)
+            var factor : Int = 1
+            if (i == DC_NODES - 1) {
+                factor = 0
+            }
+            canvas.save()
+            canvas.translate(i * gap + (i + 1)  * r * gap * state.scale, h/2)
+            canvas.drawCircle(0f, 0f, (i + 1) * r + r * state.scale * factor, paint)
+            canvas.restore()
+            next?.draw(canvas, paint)
+        }
+
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < DC_NODES - 1) {
+                next = DSNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : DSNode {
+            var curr : DSNode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this
+        }
+
     }
 }
