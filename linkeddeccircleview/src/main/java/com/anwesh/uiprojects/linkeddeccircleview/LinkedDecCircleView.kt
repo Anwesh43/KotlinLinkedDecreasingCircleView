@@ -9,6 +9,7 @@ import android.content.Context
 import android.graphics.Paint
 import android.graphics.Canvas
 import android.graphics.Color
+import android.util.Log
 import android.view.View
 import android.view.MotionEvent
 
@@ -36,7 +37,8 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
     data class DCState(var scale : Float = 0f, var prevScale : Float = 0f, var dir : Float = 0f) {
 
         fun update(stopcb : (Float) -> Unit) {
-            scale = prevScale + dir
+            scale += dir * 0.1f
+            Log.d("scale : ", "${scale}")
             if (Math.abs(scale - prevScale) > 1) {
                 scale = prevScale + dir
                 dir = 0f
@@ -102,13 +104,9 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
             val h : Float = canvas.height.toFloat()
             val gap : Float = w / DC_NODES
             val r : Float = gap / (2 * DC_NODES)
-            var factor : Int = 1
-            if (i == DC_NODES - 1) {
-                factor = 0
-            }
             canvas.save()
-            canvas.translate(i * gap + (i + 1)  * r * gap * state.scale, h/2)
-            canvas.drawCircle(0f, 0f, (i + 1) * r + r * state.scale * factor, paint)
+            canvas.translate(i * gap + (i + 1)  * r  + gap * state.scale, h/2)
+            canvas.drawCircle(0f, 0f, (i + 1) * r + r * state.scale , paint)
             canvas.restore()
             next?.draw(canvas, paint)
         }
@@ -177,6 +175,7 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
             animator.animate {
                 ldc.update {j, scale ->
                     animator.stop()
+                    render(canvas, paint)
                 }
             }
         }
