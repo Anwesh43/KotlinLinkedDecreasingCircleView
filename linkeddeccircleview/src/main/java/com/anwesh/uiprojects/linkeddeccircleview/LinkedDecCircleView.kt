@@ -83,8 +83,10 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
 
         var prev : DSNode? = null
 
-        fun update(stopcb : (Float) -> Unit) {
-            state.update(stopcb)
+        fun update(stopcb : (Int, Float) -> Unit) {
+            state.update {
+                stopcb(i, it)
+            }
         }
 
         fun startUpdating(startcb : () -> Unit) {
@@ -130,5 +132,29 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
             return this
         }
 
+    }
+
+    data class LinkedDecCircle (var i : Int) {
+
+        private var curr : DSNode = DSNode(0)
+
+        private var dir : Int = 1
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            curr.draw(canvas, paint)
+        }
+
+        fun update(stopcb : (Int, Float) -> Unit) {
+            curr.update {j, scale ->
+                curr = curr.getNext(dir) {
+                    dir *= -1
+                }
+                stopcb(j, scale)
+            }
+        }
+
+        fun startUpdating(startcb : () -> Unit) {
+            curr.startUpdating(startcb)
+        }
     }
 }
