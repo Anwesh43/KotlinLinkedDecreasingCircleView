@@ -4,6 +4,7 @@ package com.anwesh.uiprojects.linkeddeccircleview
  * Created by anweshmishra on 09/07/18.
  */
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Canvas
@@ -183,6 +184,14 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
             ldc.startUpdating {
                 animator.start()
             }
+        }
+    }
+
+    companion object {
+        fun create(activity : Activity) : LinkedDecCircleView {
+            val view : LinkedDecCircleView = LinkedDecCircleView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
