@@ -7,6 +7,7 @@ package com.anwesh.uiprojects.linkeddeccircleview
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Canvas
+import android.graphics.Color
 import android.view.View
 import android.view.MotionEvent
 
@@ -155,6 +156,31 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
 
         fun startUpdating(startcb : () -> Unit) {
             curr.startUpdating(startcb)
+        }
+    }
+
+    data class Renderer(var view : LinkedDecCircleView) {
+
+        private val animator : DSAnimator = DSAnimator(view)
+
+        private val ldc : LinkedDecCircle = LinkedDecCircle(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#BDBDBD"))
+            paint.color = Color.parseColor("#512DA8")
+            paint.strokeCap = Paint.Cap.ROUND
+            ldc.draw(canvas, paint)
+            animator.animate {
+                ldc.update {j, scale ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            ldc.startUpdating {
+                animator.start()
+            }
         }
     }
 }
