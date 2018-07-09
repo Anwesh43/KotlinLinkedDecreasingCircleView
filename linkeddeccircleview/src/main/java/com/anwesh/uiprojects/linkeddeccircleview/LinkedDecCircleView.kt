@@ -10,6 +10,8 @@ import android.graphics.Canvas
 import android.view.View
 import android.view.MotionEvent
 
+val DC_NODES : Int = 5
+
 class LinkedDecCircleView (ctx : Context) : View(ctx) {
 
     private val paint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -25,5 +27,25 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
             }
         }
         return true
+    }
+
+    data class DCState(var scale : Float = 0f, var prevScale : Float = 0f, var dir : Float = 0f) {
+
+        fun update(stopcb : (Float) -> Unit) {
+            scale = prevScale + dir
+            if (Math.abs(scale - prevScale) > 1) {
+                scale = prevScale + dir
+                dir = 0f
+                prevScale = scale
+                stopcb(prevScale)
+            }
+        }
+
+        fun startUpdating(startcb : (Float) -> Unit) {
+            if (dir == 0f) {
+                dir = 1 - 2 * prevScale
+                startcb()
+            }
+        }
     }
 }
