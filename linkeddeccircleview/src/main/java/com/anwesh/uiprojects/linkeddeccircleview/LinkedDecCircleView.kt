@@ -48,4 +48,32 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
             }
         }
     }
+
+    data class DSAnimator(var view : View, var animated : Boolean = false) {
+
+        fun animate(cb : () -> Unit) {
+            if (animated) {
+                cb()
+                try {
+                    Thread.sleep(50)
+                    view.invalidate()
+                } catch(ex : Exception) {
+
+                }
+            }
+        }
+
+        fun start() {
+            if (!animated) {
+                animated = true
+                view.postInvalidate()
+            }
+        }
+
+        fun stop() {
+            if (animated) {
+                animated = false
+            }
+        }
+    }
 }
