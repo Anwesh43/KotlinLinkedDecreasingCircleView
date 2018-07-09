@@ -172,6 +172,7 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
             canvas.drawColor(Color.parseColor("#BDBDBD"))
             paint.color = Color.parseColor("#512DA8")
             paint.strokeCap = Paint.Cap.ROUND
+            paint.strokeWidth = 6f
             ldc.draw(canvas, paint)
             animator.animate {
                 ldc.update {j, scale ->
