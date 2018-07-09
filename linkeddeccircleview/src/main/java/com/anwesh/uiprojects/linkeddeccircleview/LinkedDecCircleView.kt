@@ -21,6 +21,12 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
 
     private  val renderer : Renderer = Renderer(this)
 
+    var onCompletionListener : OnCompletionListener ?= null
+
+    fun setOnCompletionListener(onComplete : (Int) -> Unit) {
+        onCompletionListener = OnCompletionListener(onComplete)
+    }
+
     override fun onDraw(canvas : Canvas) {
         renderer.render(canvas, paint)
     }
@@ -176,6 +182,9 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
                 ldc.update {j, scale ->
                     animator.stop()
                     render(canvas, paint)
+                    when (scale) {
+                        1f -> view.onCompletionListener?.onComplete?.invoke(j)
+                    }
                 }
             }
         }
@@ -194,4 +203,6 @@ class LinkedDecCircleView (ctx : Context) : View(ctx) {
             return view
         }
     }
+
+    data class OnCompletionListener(var onComplete : (Int) -> Unit)
 }
